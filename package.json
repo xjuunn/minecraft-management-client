@@ -14,10 +14,6 @@
   "scripts": {
     "build": "tsup src/index.ts --format cjs,esm --dts"
   },
-  "devDependencies": {
-    "tsup": "^8.5.0",
-    "typescript": "^5.9.2"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/xjuunn/minecraft-management-client.git"
@@ -33,5 +29,14 @@
     "Management Protocol",
     "25w35a",
     "Minecraft Server Manager"
-  ]
+  ],
+  "dependencies": {
+    "ws": "^8.18.3"
+  },
+  "devDependencies": {
+    "@types/node": "^24.3.0",
+    "@types/ws": "^8.18.1",
+    "tsup": "^8.5.0",
+    "typescript": "^5.9.2"
+  }
 }
