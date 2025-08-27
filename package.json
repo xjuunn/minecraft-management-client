@@ -1,18 +1,16 @@
 {
   "name": "minecraft-management-client",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "A lightweight client library for Frontend/Node.js environments that wraps the Minecraft Server Management Protocol introduced in 25w35a. With this library, you can manage a Minecraft server directly from JavaScript code",
-  "main": "dist/index.js",
-  "module": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "exports": {
-    ".": {
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
-    }
-  },
+  "main": "dist/cjs/index.cjs",
+  "module": "dist/esm/index.js",
+  "types": "dist/types/index.d.ts",
+  "type": "module",
+  "files": [
+    "dist"
+  ],
   "scripts": {
-    "build": "tsup src/index.ts --format cjs,esm --dts"
+    "build": "tsup"
   },
   "repository": {
     "type": "git",

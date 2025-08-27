@@ -38,14 +38,9 @@ export class WSClient {
         this.ws = new WebSocketImpl(url);
         this.on('message', (data: MessageEvent) => {
             const msg: JsonRpcResponse = JSON.parse(data.data)
-            console.log("2:", msg);
-
             if (msg.id !== undefined && this.pending.has(msg.id)) {
                 this.pending.get(msg.id)!(msg);
                 this.pending.delete(msg.id);
-                console.warn("回调：", msg)
-            } else {
-                console.warn("收到的消息：", msg)
             }
         })
     }
@@ -66,8 +61,6 @@ export class WSClient {
         const payload: JsonRpcRequest = { jsonrpc: "2.0", id, method, params }
         return new Promise((resolve, reject) => {
             this.pending.set(id, res => {
-                console.log(1);
-
                 if (res.error) reject(res.error);
                 else resolve(res.result);
             });
