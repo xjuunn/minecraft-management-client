@@ -92,8 +92,6 @@ export class WSClient {
                 }
                 else resolve(res.result);
             });
-            console.log("调用：", JSON.stringify(payload));
-
             this.ws.send(JSON.stringify(payload));
         })
     }
