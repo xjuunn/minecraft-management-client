@@ -8,12 +8,9 @@ With this library, you can manage a Minecraft server directly from your JavaScri
 ## Features
 
 - ⚡ Supports **Node.js** and **browser** environments
-
-  📝 Written in TypeScript with full type declarations
-
-  🔌 Allows management of the server’s `allowlist`, `bans`, `ipbans`, `operators`, `players`, `server`, and `serversettings`—all official methods
-
-  📡 Supports listening to server notification messages, including all official notifications
+- 📝 Written in TypeScript with full type declarations
+- 🔌 Allows management of the server’s `allowlist`, `bans`, `ipbans`, `operators`, `players`, `server`, and `serversettings`—all official methods
+- 📡 Supports listening to server notification messages, including all official notifications
 
 ## Usage
 
@@ -59,6 +56,7 @@ ws.onNotification("notification:players/joined", (data) => {
 player list
 
 ```ts
+import { Method } from "minecraft-management-client";
 // list players
 const players = await ws.callMethod(Method.Players.get());
 console.log("player list:", players);

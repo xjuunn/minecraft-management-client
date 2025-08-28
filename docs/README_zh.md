@@ -55,6 +55,7 @@ ws.onNotification("notification:players/joined", (data) => {
 玩家列表
 
 ~~~ ts
+import { Method } from "minecraft-management-client";
 // 查询玩家列表
 const players = await ws.callMethod(Method.Players.get());
 console.log("玩家列表:",players);
