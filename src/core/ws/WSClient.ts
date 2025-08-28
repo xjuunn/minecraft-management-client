@@ -1,3 +1,5 @@
+import { Method } from "../../methods";
+
 let WebSocketImpl: typeof WebSocket;
 if (typeof window === 'undefined') {
     WebSocketImpl = require('ws');
@@ -45,26 +47,41 @@ export class WSClient {
         })
     }
 
-    // 注册事件回调
+    // Register the event callback
     public on<K extends keyof WSCallbackMap>(event: K, callback: WSCallbackMap[K]) {
         this.ws.addEventListener(event, callback as EventListener);
     }
 
-    // 注销事件回调
+    // Cancel event callback
     public off<K extends keyof WSCallbackMap>(event: K, callback: WSCallbackMap[K]) {
         this.ws.removeEventListener(event, callback as EventListener);
     }
 
-    // RPC 调用
+    // RPC call
     public call(method: string, params?: any[]): Promise<any> {
         const id = this.rpcId++;
         const payload: JsonRpcRequest = { jsonrpc: "2.0", id, method, params }
         return new Promise((resolve, reject) => {
             this.pending.set(id, res => {
-                if (res.error) reject(res.error);
+                if (res.error) {
+                    console.error(res.error);
+                    throw new Error(res.error);
+                }
                 else resolve(res.result);
             });
             this.ws.send(JSON.stringify(payload));
         })
+    }
+
+    /**
+     * RPC method call
+     * @param method Method
+     */
+    public callMethod<P, R>(method: Method<P, R>): Promise<R> {
+        if (method.params === undefined || method.params === null)
+            return this.call(method.method, []);
+        if (method.params instanceof Array)
+            return this.call(method.method, method.params);
+        return this.call(method.method, [method.params]);
     }
 }
