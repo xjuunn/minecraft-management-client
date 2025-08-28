@@ -55,8 +55,6 @@ export class WSClient {
         this.ws = new WebSocketImpl(url);
         this.on('message', (data: MessageEvent) => {
             const msg: JsonRpcResponse = JSON.parse(data.data)
-            console.log("收到消息： ", msg);
-
             if (msg.id !== undefined && this.pending.has(msg.id)) {
                 this.pending.get(msg.id)!(msg);
                 this.pending.delete(msg.id);
@@ -94,6 +92,8 @@ export class WSClient {
                 }
                 else resolve(res.result);
             });
+            console.log("调用：", JSON.stringify(payload));
+
             this.ws.send(JSON.stringify(payload));
         })
     }
@@ -103,10 +103,12 @@ export class WSClient {
      * @param method Method
      */
     public callMethod<P, R>(method: Method<P, R>): Promise<R> {
-        if (method.params === undefined || method.params === null)
+        if (method.params === undefined || method.params === null) {
             return this.call(method.method, []);
-        if (method.params instanceof Array)
-            return this.call(method.method, method.params);
+        }
+        // if (method.params instanceof Array) {
+        //     return this.call(method.method, [method.params]);
+        // }
         return this.call(method.method, [method.params]);
     }
 
