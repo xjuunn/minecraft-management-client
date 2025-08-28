@@ -32,7 +32,7 @@
 # 使用npm
 npm i minecraft-management-client
 # 使用pnpm
-pnpm i npm i minecraft-management-client
+pnpm i minecraft-management-client
 # 使用yarn
 yarn add minecraft-management-client
 ~~~

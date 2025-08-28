@@ -33,7 +33,7 @@ install
 # use npm
 npm i minecraft-management-client
 # use pnpm
-pnpm i npm i minecraft-management-client
+pnpm i minecraft-management-client
 # use yarn
 yarn add minecraft-management-client
 ```
