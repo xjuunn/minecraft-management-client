@@ -1,10 +1,22 @@
 import { Method } from "../../methods";
+import { Notification, Notifications, NotificationParams } from '../../notification/index';
 
 let WebSocketImpl: typeof WebSocket;
 if (typeof window === 'undefined') {
     WebSocketImpl = require('ws');
 } else {
     WebSocketImpl = WebSocket;
+}
+
+/**
+ * Notification handler
+ */
+export type NotificationHandler<T extends Notifications['name']> = (
+    params: NotificationParams<T>
+) => void;
+
+type NotificationMap = {
+    [K in Notifications['name']]: NotificationHandler<K>[];
 }
 
 interface JsonRpcRequest {
@@ -19,6 +31,8 @@ interface JsonRpcResponse {
     id?: number;
     result?: any;
     error?: any;
+    method?: string;
+    params?: any[];
 }
 
 type WSCallbackMap = {
@@ -35,15 +49,26 @@ export class WSClient {
     private ws: WebSocket;
     private rpcId = 0;
     private pending: Map<number, (res: JsonRpcResponse) => void> = new Map();
+    private handlers: Partial<NotificationMap> = {};
 
     constructor(url: string) {
         this.ws = new WebSocketImpl(url);
         this.on('message', (data: MessageEvent) => {
             const msg: JsonRpcResponse = JSON.parse(data.data)
+            console.log("收到消息： ", msg);
+
             if (msg.id !== undefined && this.pending.has(msg.id)) {
                 this.pending.get(msg.id)!(msg);
                 this.pending.delete(msg.id);
             }
+            // notification callback
+            this.handlers[msg.method as Notifications['name']]?.forEach(callback => {
+                if (msg.params === undefined) {
+                    (callback as () => void)();
+                } else {
+                    (callback as (params: any) => void)(msg.params);
+                }
+            });
         })
     }
 
@@ -83,5 +108,38 @@ export class WSClient {
         if (method.params instanceof Array)
             return this.call(method.method, method.params);
         return this.call(method.method, [method.params]);
+    }
+
+    /**
+     * Register a notification handler
+     * @param name Notification name
+     * @param handler Notification handler
+     */
+    public onNotification<T extends Notifications['name']>(
+        name: T,
+        handler: NotificationHandler<T>
+    ) {
+        if (!this.handlers[name]) {
+            this.handlers[name] = [];
+        }
+        (this.handlers[name] as NotificationHandler<T>[]).push(handler);
+    }
+
+    /**
+     * Unregister a notification handler
+     * @param name Notification name
+     * @param handler Notification handler
+     */
+    public offNotification<T extends Notifications['name']>(
+        name: T,
+        handler: NotificationHandler<T>
+    ) {
+        const list = this.handlers[name] as NotificationHandler<T>[] | undefined;
+        if (!list) return;
+        const next = list.filter(h => h !== handler);
+        (this.handlers as Record<string, NotificationHandler<any>[]>)[name] = next;
+        if (next.length === 0) {
+            delete (this.handlers as Record<string, NotificationHandler<any>[]>)[name];
+        }
     }
 }

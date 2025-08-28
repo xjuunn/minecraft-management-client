@@ -10,8 +10,6 @@ export * as Players from './players/index';
 export * as Server from './server/index';
 export * as ServerSettings from './serversettings/index';
 
-export * as Enums from '../core/enums';
-
 export interface IMethod<Params = any, Result = any> {
     method: string;
     params?: Params;
